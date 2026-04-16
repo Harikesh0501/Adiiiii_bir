@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Letter For You 💌</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ffd1dc, #ffefd5);
+            font-family: 'Quicksand', sans-serif;
+            overflow-x: hidden;
+            padding: 80px 20px; /* Space so it does not touch the edges */
+        }
+
+        .envelope-container {
+            position: relative;
+            cursor: pointer;
+            width: 700px;
+            height: 250px;
+            perspective: 800px;
+            z-index: 10;
+            transition: transform 0.8s ease;
+        }
+        
+        .envelope-container.open {
+            transform: translateY(120px); /* Push the whole container down so the top of the letter comes to the center block */
+            cursor: default;
+        }
+        
+        .instruction {
+            position: absolute;
+            top: -40px;
+            width: 100%;
+            text-align: center;
+            font-size: 1.2rem;
+            color: #d14777;
+            font-weight: 600;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .envelope {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #ff8fa3;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform-style: preserve-3d;
+            transition: all 0.5s ease;
+        }
+
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 350px solid transparent;
+            border-right: 350px solid transparent;
+            border-top: 125px solid #ff758e;
+            transform-origin: top;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 4;
+        }
+
+        .front {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 350px solid #ff99ac;
+            border-right: 350px solid #ff99ac;
+            border-bottom: 125px solid #ff8fa3;
+            z-index: 3;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .letter {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 670px;
+            height: 220px;
+            background: #fff9fa;
+            border-radius: 5px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .letter::-webkit-scrollbar {
+            width: 4px;
+        }
+        .letter::-webkit-scrollbar-thumb {
+            background: #ff99ac;
+            border-radius: 4px;
+        }
+
+        .letter-content {
+            opacity: 0;
+            transition: opacity 0.5s 0.8s;
+            text-align: left;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .letter h2 {
+            font-family: 'Dancing Script', cursive;
+            color: #d14777;
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .letter-text {
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.6;
+            color: #333;
+            letter-spacing: 0.3px;
+            margin-bottom: 15px;
+            text-shadow: 0.2px 0.2px 0px rgba(0,0,0,0.1);
+        }
+
+        .slideshow {
+            position: relative;
+            width: 100%;
+            height: 450px;
+            margin: 12px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 3px solid #ff99ac;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #ffe6ea, #ffb3c6, #ffccd5, #ffe6ea);
+            background-size: 300% 300%;
+            animation: slideBg 8s ease infinite;
+        }
+
+        @keyframes slideBg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .slideshow img {
+            position: absolute;
+            width: 280px;
+            height: 380px;
+            object-fit: cover;
+            object-position: center 20%;
+            background-color: white;
+            padding: 12px 12px 55px 12px; /* Creating the white Polaroid frame */
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            opacity: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            animation: slideFade 12s infinite;
+        }
+
+        .slideshow img:nth-child(1) { animation-delay: 0s; }
+        .slideshow img:nth-child(2) { animation-delay: 3s; }
+        .slideshow img:nth-child(3) { animation-delay: 6s; }
+        .slideshow img:nth-child(4) { animation-delay: 9s; }
+
+        @keyframes slideFade {
+            0%, 20% { 
+                opacity: 1; 
+                transform: translate(-50%, -50%) scale(1) rotate(-3deg); 
+                z-index: 2; 
+            }
+            25%, 100% { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(0.9) rotate(5deg); 
+                z-index: 1; 
+            }
+        }
+
+        .letter-btn {
+            background: #ff6b81;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            margin-top: auto;
+            align-self: center;
+            transition: transform 0.2s;
+        }
+        
+        .letter-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Open State */
+        .envelope-container.open .flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .envelope-container.open .letter {
+            transform: translateY(-400px) scale(1.05); /* Shift the letter further up relatively */
+            z-index: 5;
+            height: auto;
+            max-height: 700px;
+            overflow-y: auto;
+            min-height: 600px;
+        }
+
+        .envelope-container.open .letter-content {
+            opacity: 1;
+        }
+        
+        .envelope-container.open .instruction {
+            opacity: 0;
+        }
+        
+        /* Floating Hearts */
+        .heart {
+            position: absolute;
+            color: #ff4757;
+            font-size: 20px;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 20;
+        }
+
+        /* Background Polaroids */
+        .bg-polaroids {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1; /* Behind everything */
+            overflow: hidden;
+        }
+
+        .bg-polaroid {
+            position: absolute;
+            bottom: -300px;
+            left: var(--x);
+            width: 160px;
+            height: 200px;
+            background: white;
+            padding: 8px 8px 30px 8px;
+            border-radius: 4px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            opacity: 0.35; /* Increased Opacity */
+            filter: blur(1.5px); /* Slightly less blur */
+            animation: slowFloat 25s linear infinite;
+            animation-delay: var(--d);
+        }
+
+        .bg-polaroid img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+
+        @keyframes slowFloat {
+            0% {
+                transform: translateY(0) rotate(var(--r1)) scale(1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.35;
+            }
+            90% {
+                opacity: 0.35;
+            }
+            100% {
+                transform: translateY(-120vh) rotate(var(--r2)) scale(1.1);
+                opacity: 0;
+            }
+        }
+
+        /* Background Floating Hearts */
+        .bg-heart-float {
+            position: absolute;
+            bottom: -100px;
+            left: var(--x);
+            font-size: var(--s, 24px);
+            color: #ff4757;
+            opacity: 0;
+            filter: drop-shadow(0 0 5px rgba(255, 71, 87, 0.4));
+            animation: floatHeartAnim var(--d_dur, 15s) linear infinite;
+            animation-delay: var(--d_del, 0s);
+            z-index: 1;
+        }
+
+        @keyframes floatHeartAnim {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                opacity: 0;
+            }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% {
+                transform: translateY(-120vh) rotate(360deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Background Cinematic Polaroids & Hearts -->
+    <div class="bg-polaroids">
+        <div class="bg-polaroid" style="--d: 0s; --x: 10%; --r1: -15deg; --r2: 10deg;">
+            <img src="./images/WhatsApp Image 2026-04-16 at 9.34.32 AM.jpeg" alt="">
+        </div>
+        <div class="bg-polaroid" style="--d: 8s; --x: 85%; --r1: 20deg; --r2: -10deg;">
+            <img src="./images/WhatsApp Image 2026-04-16 at 9.34.33 AM.jpeg" alt="">
+        </div>
+        <div class="bg-polaroid" style="--d: 14s; --x: 5%; --r1: 5deg; --r2: 25deg;">
+            <img src="./images/WhatsApp Image 2026-04-16 at 9.34.35 AM.jpeg" alt="">
+        </div>
+        <div class="bg-polaroid" style="--d: 4s; --x: 75%; --r1: -25deg; --r2: 5deg;">
+            <img src="./images/WhatsApp Image 2026-04-16 at 9.34.36 AM.jpeg" alt="">
+        </div>
+        <div class="bg-polaroid" style="--d: 18s; --x: 18%; --r1: 15deg; --r2: -15deg;">
+            <img src="./images/WhatsApp Image 2026-04-16 at 9.34.32 AM.jpeg" alt="">
+        </div>
+        <div class="bg-polaroid" style="--d: 22s; --x: 88%; --r1: -10deg; --r2: 20deg;">
+            <img src="./images/WhatsApp Image 2026-04-16 at 9.34.33 AM.jpeg" alt="">
+        </div>
+
+        <!-- Floating Hearts -->
+        <div class="bg-heart-float" style="--x: 15%; --d_dur: 12s; --d_del: 2s; --s: 30px;">💖</div>
+        <div class="bg-heart-float" style="--x: 80%; --d_dur: 16s; --d_del: 1s; --s: 20px;">💕</div>
+        <div class="bg-heart-float" style="--x: 40%; --d_dur: 14s; --d_del: 5s; --s: 35px;">✨</div>
+        <div class="bg-heart-float" style="--x: 60%; --d_dur: 18s; --d_del: 8s; --s: 25px;">💗</div>
+        <div class="bg-heart-float" style="--x: 25%; --d_dur: 15s; --d_del: 11s; --s: 40px;">💖</div>
+        <div class="bg-heart-float" style="--x: 90%; --d_dur: 13s; --d_del: 14s; --s: 30px;">💕</div>
+        <div class="bg-heart-float" style="--x: 5%; --d_dur: 17s; --d_del: 18s; --s: 22px;">🌸</div>
+    </div>
+
+    <div class="envelope-container" onclick="openEnvelope()">
+        <div class="instruction">Tap to open 💌</div>
+        <div class="envelope">
+            <div class="flap"></div>
+            <div class="letter">
+                <div class="letter-content">
+                    <h2>Happy 19th Birthday! 🎂</h2>
+                    <div class="letter-text">
+                        Today is YOUR day, and I want you to know just how incredibly special you are!<br><br>
+                        You're not just my best friend – you're the one who makes every ordinary moment extraordinary. From our endless conversations to our craziest adventures, every single memory with you is pure gold. ✨<br><br>
+                        Thank you for being YOU – for your infectious laughter, your beautiful soul, and for always being there no matter what. Life would be so boring without you! 😜<br><br>
+                        As you step into 19, I wish you all the happiness, love, and success this world has to offer. May every dream of yours come true!<br><br>
+                        Here's to more memories, more laughter, and many more years of this beautiful friendship! 🥂<br><br>
+                        <strong>Happiest Birthday, madam 🌟💗</strong>
+                    </div>
+                    
+                    <div class="slideshow">
+                        <img src="./images/WhatsApp Image 2026-04-16 at 9.34.32 AM.jpeg" alt="Memory 1">
+                        <img src="./images/WhatsApp Image 2026-04-16 at 9.34.33 AM.jpeg" alt="Memory 2">
+                        <img src="./images/WhatsApp Image 2026-04-16 at 9.34.35 AM.jpeg" alt="Memory 3">
+                        <img src="./images/WhatsApp Image 2026-04-16 at 9.34.36 AM.jpeg" alt="Memory 4">
+                    </div>
+                    
+                    <button class="letter-btn" onclick="nextPage(event)">Continue to memories 💕</button>
+                </div>
+            </div>
+            <div class="front"></div>
+        </div>
+    </div>
+
+    <script>
+        let isOpen = false;
+
+        function openEnvelope() {
+            if (isOpen) return;
+            const container = document.querySelector('.envelope-container');
+            container.classList.add('open');
+            isOpen = true;
+            
+            // Release hearts
+            for(let i=0; i<15; i++) {
+                createHeart();
+            }
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.innerHTML = ['💖', '💕', '✨', '🌸'][Math.floor(Math.random() * 4)];
+            heart.className = 'heart';
+            document.body.appendChild(heart);
+            
+            const envelopeRect = document.querySelector('.envelope-container').getBoundingClientRect();
+            const startX = envelopeRect.left + envelopeRect.width / 2;
+            const startY = envelopeRect.top + envelopeRect.height / 2;
+            
+            gsap.fromTo(heart, 
+                { x: startX, y: startY, opacity: 1, scale: 0 },
+                { 
+                    x: startX + (Math.random() - 0.5) * 400, 
+                    y: startY - Math.random() * 300 - 100, 
+                    opacity: 0, 
+                    scale: Math.random() * 1.5 + 0.5,
+                    rotation: Math.random() * 360,
+                    duration: 2 + Math.random() * 2,
+                    ease: "power1.out",
+                    onComplete: () => heart.remove()
+                }
+            );
+        }
+
+        function nextPage(e) {
+            e.stopPropagation(); // prevent envelope click
+            gsap.to('body', {
+                opacity: 0,
+                duration: 1,
+                onComplete: () => {
+                    window.location.href = 'flashlight.html'; 
+                }
+            });
+        }
+    </script>
+</body>
+</html>

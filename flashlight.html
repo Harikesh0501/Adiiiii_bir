@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You Light Up My World 🔦</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@500;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Quicksand', sans-serif;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .darkness {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #000;
+            z-index: 10;
+            pointer-events: none;
+            /* Flashlight effect */
+            mask-image: radial-gradient(circle 180px at var(--x, 50vw) var(--y, 50vh), transparent 0%, rgba(0, 0, 0, 0.95) 100%);
+            -webkit-mask-image: radial-gradient(circle 180px at var(--x, 50vw) var(--y, 50vh), transparent 0%, rgba(0, 0, 0, 0.98) 100%);
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            padding: 50px;
+            background: linear-gradient(135deg, #1c1c1c, #2a2a2a);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            color: #ff99ac;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 153, 172, 0.5);
+        }
+
+        .photo-collage {
+            display: flex;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .photo-collage img {
+            width: 250px;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 4px solid #fff;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            transform: rotate(-5deg);
+            transition: transform 0.3s;
+        }
+
+        .photo-collage img:nth-child(2) {
+            transform: rotate(5deg) scale(1.1);
+            z-index: 2;
+        }
+
+        .photo-collage img:nth-child(3) {
+            transform: rotate(-2deg);
+        }
+
+        p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            line-height: 1.6;
+            margin-top: 20px;
+            color: #ffccd5;
+        }
+
+        .next-btn {
+            margin-top: 40px;
+            padding: 12px 30px;
+            background: #ff6b81;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            z-index: 100;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(255, 107, 129, 0.4);
+            transition: transform 0.2s, background 0.2s;
+        }
+        
+        .next-btn:hover {
+            transform: scale(1.05);
+            background: #ff4757;
+        }
+
+        .instruction {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            z-index: 100;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="instruction">Move your mouse to search the darkness 🔦</div>
+    
+    <div class="content" id="mainContent">
+        <h1>You Light Up My Darkest Days ✨</h1>
+        
+        <div class="photo-collage">
+            <img src="./images/WhatsApp Image 2026-04-16 at 10.34.22 AM.jpeg" alt="Pic 1">
+            <img src="./images/WhatsApp Image 2026-04-16 at 10.34.22 AM (1).jpeg" alt="Pic 2">
+            <img src="./images/WhatsApp Image 2026-04-16 at 10.34.22 AM (2).jpeg" alt="Pic 3">
+        </div>
+
+        <p>No matter how dark things get, your smile always brings back the light.<br>Thank you for being sunshine, Aditi. 💖</p>
+        
+        <button class="next-btn" onclick="goNext()">Explore your Hanging Memories 💕</button>
+    </div>
+
+    <!-- The dark mask overlay -->
+    <div class="darkness" id="darkOverlay"></div>
+
+    <script>
+        // Track mouse movement to move the flashlight mask
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            document.getElementById('darkOverlay').style.setProperty('--x', x + 'px');
+            document.getElementById('darkOverlay').style.setProperty('--y', y + 'px');
+        });
+
+        // For touch devices
+        document.addEventListener('touchmove', (e) => {
+            const x = e.touches[0].clientX;
+            const y = e.touches[0].clientY;
+            document.getElementById('darkOverlay').style.setProperty('--x', x + 'px');
+            document.getElementById('darkOverlay').style.setProperty('--y', y + 'px');
+        });
+
+        // Initialize center
+        document.getElementById('darkOverlay').style.setProperty('--x', (window.innerWidth / 2) + 'px');
+        document.getElementById('darkOverlay').style.setProperty('--y', (window.innerHeight / 2) + 'px');
+
+        function goNext() {
+            gsap.to('body', { opacity: 0, duration: 1, onComplete: () => { window.location.href = 'hanging.html'; } });
+        }
+        
+        // Intro animation
+        gsap.from('.content', { opacity: 0, duration: 2 });
+    </script>
+</body>
+</html>

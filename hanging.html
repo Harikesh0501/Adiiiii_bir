@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hanging Memories 🧺</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(to bottom, #dbe2ff, #fffcfd);
+            font-family: 'Quicksand', sans-serif;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            margin-top: 40px;
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: #d14777;
+            text-align: center;
+        }
+
+        .instruction {
+            color: #777;
+            margin-bottom: 50px;
+            font-size: 1.1rem;
+        }
+
+        /* The string for pictures */
+        .clothesline {
+            width: 100%;
+            height: 4px;
+            background: #cdb4db;
+            position: relative;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+            padding: 0 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .clothesline::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #b5838d;
+        }
+        
+        .clothesline::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #b5838d;
+        }
+
+        /* Hanging container */
+        .hang-item {
+            position: relative;
+            /* Wood peg */
+            padding-top: 25px;
+            transform-origin: top center;
+            cursor: pointer;
+            filter: drop-shadow(0 15px 15px rgba(0,0,0,0.2));
+            perspective: 1000px;
+        }
+
+        /* The clip/peg */
+        .hang-item::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 40px;
+            background: #d4a373;
+            border-radius: 4px;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        /* Polaroid Card */
+        .polaroid-wrapper {
+            position: relative;
+            width: 220px;
+            height: 280px;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .hang-item.flipped .polaroid-wrapper {
+            transform: rotateY(180deg);
+        }
+
+        .front, .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+        }
+
+        .front {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .front img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+
+        .cap {
+            margin-top: 15px;
+            text-align: center;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            color: #d14777;
+        }
+
+        .back {
+            transform: rotateY(180deg);
+            background: #ffd1dc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2rem;
+            color: #444;
+            font-weight: 600;
+            border: 2px dashed white;
+        }
+
+        /* Swinging animations */
+        .swing-1 { animation: swing1 4s infinite alternate ease-in-out; }
+        .swing-2 { animation: swing2 3.5s infinite alternate ease-in-out; }
+        .swing-3 { animation: swing3 4.2s infinite alternate ease-in-out; }
+        .swing-4 { animation: swing4 3.8s infinite alternate ease-in-out; }
+
+        @keyframes swing1 { 0% { transform: rotate(-5deg); } 100% { transform: rotate(4deg); } }
+        @keyframes swing2 { 0% { transform: rotate(4deg); } 100% { transform: rotate(-6deg); } }
+        @keyframes swing3 { 0% { transform: rotate(-6deg); } 100% { transform: rotate(5deg); } }
+        @keyframes swing4 { 0% { transform: rotate(5deg); } 100% { transform: rotate(-4deg); } }
+
+        .next-btn {
+            position: fixed;
+            bottom: 40px;
+            padding: 12px 30px;
+            background: #ffb5a7;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 181, 167, 0.5);
+            transition: 0.3s;
+        }
+
+        .next-btn:hover {
+            background: #ff9f8f;
+            transform: scale(1.05) translateY(-5px);
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1 class="header">Your Hanging Memories 💕</h1>
+    <p class="instruction">Tap on the photos to reveal a secret note inside!</p>
+
+    <!-- First row of clothesline -->
+    <div class="clothesline" style="margin-bottom: 80px;">
+        <div class="hang-item swing-1" onclick="this.classList.toggle('flipped')">
+            <div class="polaroid-wrapper">
+                <div class="front">
+                    <img src="./images/WhatsApp Image 2026-04-16 at 9.34.32 AM.jpeg" alt="Memory">
+                    <div class="cap">Best Day ✨</div>
+                </div>
+                <div class="back">Every moment spent with you becomes a beautiful memory. 💖</div>
+            </div>
+        </div>
+
+        <div class="hang-item swing-2" onclick="this.classList.toggle('flipped')">
+            <div class="polaroid-wrapper">
+                <div class="front">
+                    <img src="./images/WhatsApp Image 2026-04-16 at 9.34.33 AM.jpeg" alt="Memory">
+                    <div class="cap">Us 🧸</div>
+                </div>
+                <div class="back">If I had to look at just one thing forever, it would be your smile. 😍</div>
+            </div>
+        </div>
+
+        <div class="hang-item swing-3" onclick="this.classList.toggle('flipped')">
+            <div class="polaroid-wrapper">
+                <div class="front">
+                    <img src="./images/IMG_20260119_103549129_HDR.jpg" alt="Memory">
+                    <div class="cap">Your Smile 😊</div>
+                </div>
+                <div class="back">Seeing you smile is the absolute best part of my day. Never lose it! ✨</div>
+            </div>
+        </div>
+
+        <div class="hang-item swing-4" onclick="this.classList.toggle('flipped')">
+            <div class="polaroid-wrapper">
+                <div class="front">
+                    <img src="./images/WhatsApp Image 2026-04-16 at 10.34.22 AM.jpeg" alt="Memory">
+                    <div class="cap">Beautiful soul🫠</div>
+                </div>
+                <div class="back">Beyond your gorgeous looks, it's your pure and beautiful soul that I admire the most. 💫</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="next-btn" onclick="goNext()">Open Our 3D Storybook 📖</button>
+
+    <script>
+        gsap.from('.clothesline', { width: 0, opacity: 0, duration: 1.5, ease: "power3.out" });
+        gsap.from('.hang-item', { opacity: 0, y: -50, stagger: 0.2, duration: 1, delay: 0.5, ease: "bounce.out" });
+
+        function goNext() {
+            gsap.to('body', { opacity: 0, duration: 1, onComplete: () => { window.location.href = 'book.html'; } });
+        }
+    </script>
+</body>
+</html>
